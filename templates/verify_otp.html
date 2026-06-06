@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="auth-card">
+    <p class="auth-title">Verify your email</p>
+    <p class="auth-sub">We sent a 6-digit OTP to <span style="color:#6c63ff">{{ email }}</span></p>
+
+    <form method="POST">
+        <div style="margin-bottom:16px">
+            <label class="form-label">Enter OTP</label>
+            <input type="text" name="otp" class="dark-input"
+                   placeholder="Enter 6-digit OTP"
+                   maxlength="6" required
+                   style="letter-spacing:0.3em;font-size:20px;text-align:center">
+        </div>
+        <button type="submit" class="btn-purple" style="width:100%;padding:11px">
+            Verify Email
+        </button>
+    </form>
+
+    <div style="margin-top:20px;padding:14px;background:#0f1117;border-radius:8px;border:0.5px solid #2d3748">
+        <div style="font-size:12px;color:#a0aec0;margin-bottom:6px;font-weight:500">
+            Didn't receive OTP?
+        </div>
+        <div style="font-size:12px;color:#4a5568;line-height:1.8">
+            • Check your spam/junk folder<br>
+            • Make sure you entered the correct email<br>
+            • <a href="{{ url_for('register') }}" style="color:#6c63ff;text-decoration:none">Try registering again</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

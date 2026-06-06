@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="auth-card">
+    <p class="auth-title">Welcome back</p>
+    <p class="auth-sub">Login to your account</p>
+    <form method="POST">
+        <div style="margin-bottom:16px">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="dark-input" placeholder="Enter your email" required>
+        </div>
+        <div style="margin-bottom:16px">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="dark-input" placeholder="Enter your password" required>
+        </div>
+        <button type="submit" class="btn-purple" style="width:100%;padding:11px;margin-top:8px">Login</button>
+    </form>
+    <p style="font-size:13px;color:#4a5568;text-align:center;margin-top:16px">
+        Don't have an account? <a href="{{ url_for('register') }}" style="color:#6c63ff;text-decoration:none">Register</a>
+    </p>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+# Environment variables — never upload this!
+.env
+
+# Database — don't upload
+*.db
+
+# Virtual environment — don't upload
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE files
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db

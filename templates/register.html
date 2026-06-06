@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="auth-card">
+    <p class="auth-title">Create account</p>
+    <p class="auth-sub">Start tracking prices in seconds</p>
+    <form method="POST">
+        <div style="margin-bottom:16px">
+            <label class="form-label">Username</label>
+            <input type="text" name="username" class="dark-input" placeholder="Enter your username" required>
+        </div>
+        <div style="margin-bottom:16px">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="dark-input" placeholder="Enter your email" required>
+        </div>
+        <div style="margin-bottom:16px">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="dark-input" placeholder="Create a password" required>
+        </div>
+        <button type="submit" class="btn-purple" style="width:100%;padding:11px;margin-top:8px">Create account</button>
+    </form>
+    <p style="font-size:13px;color:#4a5568;text-align:center;margin-top:16px">
+        Already have an account? <a href="{{ url_for('login') }}" style="color:#6c63ff;text-decoration:none">Login</a>
+    </p>
+</div>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Back button + title -->
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+    <a href="{{ url_for('dashboard') }}" 
+       style="color:#a0aec0;text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px;border:0.5px solid #2d3748;padding:6px 12px;border-radius:8px;transition:all 0.2s"
+       onmouseover="this.style.borderColor='#6c63ff';this.style.color='#6c63ff'"
+       onmouseout="this.style.borderColor='#2d3748';this.style.color='#a0aec0'">
+        <i class="ti ti-arrow-left"></i> Back to dashboard
+    </a>
+</div>
+
+<!-- Product info card -->
+<div class="dark-card" style="margin-bottom:24px">
+    <div style="font-size:13px;color:#e2e8f0;margin-bottom:16px;line-height:1.5">
+        {{ product.title }}
+    </div>
+    <div style="display:flex;gap:32px">
+        <div style="display:flex;flex-direction:column;gap:3px">
+            <span class="price-label">Current price</span>
+            <span class="price-current">₹{{ "{:,.0f}".format(product.current_price) }}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px">
+            <span class="price-label">Target price</span>
+            <span class="price-target">₹{{ "{:,.0f}".format(product.target_price) }}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px">
+            <span class="price-label">Data points</span>
+            <span style="font-size:18px;font-weight:500;color:#e2e8f0">{{ prices|length }}</span>
+        </div>
+    </div>
+</div>
+
+<!-- Price history graph -->
+<div class="dark-card">
+    <div class="section-title" style="margin-bottom:20px">
+        <i class="ti ti-chart-line"></i>
+        Price history
+    </div>
+
+    {% if prices|length > 0 %}
+        <canvas id="priceChart" style="width:100%;height:300px"></canvas>
+    {% else %}
+        <div style="text-align:center;padding:60px 0;color:#4a5568">
+            <i class="ti ti-chart-line" style="font-size:40px;display:block;margin-bottom:12px"></i>
+            <p style="font-size:13px">No price history yet — check back after the next scheduled scan!</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const labels = {{ labels | tojson }};
+    const prices = {{ prices | tojson }};
+    const targetPrice = {{ product.target_price }};
+
+    const ctx = document.getElementById('priceChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Price (₹)',
+                    data: prices,
+                    borderColor: '#6c63ff',
+                    backgroundColor: 'rgba(108,99,255,0.08)',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#6c63ff',
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    fill: true,
+                    tension: 0.4
+                },
+                {
+                    label: 'Target price (₹)',
+                    data: Array(labels.length).fill(targetPrice),
+                    borderColor: '#48bb78',
+                    borderWidth: 1.5,
+                    borderDash: [6, 4],
+                    pointRadius: 0,
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#a0aec0',
+                        font: { size: 12 }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: '#1a1d27',
+                    borderColor: '#2d3748',
+                    borderWidth: 1,
+                    titleColor: '#e2e8f0',
+                    bodyColor: '#a0aec0',
+                    callbacks: {
+                        label: ctx => `₹${ctx.parsed.y.toLocaleString('en-IN')}`
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#4a5568', font: { size: 11 } },
+                    grid: { color: '#1e2130' }
+                },
+                y: {
+                    ticks: {
+                        color: '#4a5568',
+                        font: { size: 11 },
+                        callback: val => '₹' + val.toLocaleString('en-IN')
+                    },
+                    grid: { color: '#1e2130' }
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Add Product Form -->
+<div class="dark-card" style="margin-bottom:28px">
+    <div style="font-size:14px;font-weight:500;color:#a0aec0;margin-bottom:14px;display:flex;align-items:center;gap:8px">
+        <i class="ti ti-plus" style="color:#6c63ff"></i>
+        Track a new product
+    </div>
+    <form method="POST" action="{{ url_for('add_product') }}" id="add-form">
+        <div style="display:grid;grid-template-columns:1fr 200px 110px;gap:10px">
+            <input type="url" name="url" id="url-input" class="dark-input" placeholder="Paste Amazon product URL here" required>
+            <input type="number" name="target_price" class="dark-input" placeholder="Target price (₹)" required>
+            <button type="submit" class="btn-purple" id="track-btn" >Track</button>
+        </div>
+    </form>
+    <!-- Add this loading div -->
+    <div id="loading-msg" style="display:none;margin-top:14px;padding:12px;background:#0f1117;border-radius:8px;border:0.5px solid #2d3748">
+        <div style="display:flex;align-items:center;gap:10px">
+            <div class="spinner"></div>
+            <span style="font-size:13px;color:#a0aec0">Fetching from Amazon — this may take up to a minute...</span>
+        </div>
+    </div>
+</div>
+
+<!-- Section title -->
+<div class="section-title">
+    <i class="ti ti-package"></i>
+    Your tracked products
+</div>
+
+{% if products %}
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    {% for product in products %}
+    <div class="dark-card">
+        <div style="font-size:13px;color:#e2e8f0;margin-bottom:14px;line-height:1.5">
+            {{ product.title[:80] }}...
+        </div>
+
+        <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+            <div style="display:flex;flex-direction:column;gap:3px">
+                <span class="price-label">Current price</span>
+                <span class="price-current">₹{{ "{:,.0f}".format(product.current_price) }}</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:3px;text-align:right">
+                <span class="price-label">Target price</span>
+                <span class="price-target">₹{{ "{:,.0f}".format(product.target_price) }}</span>
+            </div>
+        </div>
+
+        {% if product.current_price <= product.target_price %}
+            <span class="badge-below">✓ Below target</span>
+        {% else %}
+            <span class="badge-waiting">⏳ Waiting for drop</span>
+        {% endif %}
+        {% set pred = predictions[product.id] %}
+<div style="margin-top:10px;padding:10px;background:#0f1117;border-radius:8px;border:0.5px solid #2d3748">
+    <div style="font-size:11px;color:#4a5568;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">
+        Prediction
+    </div>
+    <div style="font-size:13px;color:{{ pred.color }}">
+        {{ pred.icon }} {{ pred.message }}
+    </div>
+    {% if pred.predicted_price is defined %}
+    <div style="font-size:11px;color:#4a5568;margin-top:4px">
+        Next predicted price: ₹{{ "{:,.0f}".format(pred.predicted_price) }}
+    </div>
+    {% endif %}
+</div>
+
+        <div class="dark-divider"></div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center">
+    <a href="{{ product.url }}" target="_blank" class="btn-outline-purple">View on Amazon</a>
+    <div style="display:flex;gap:8px">
+        <a href="{{ url_for('product_history', product_id=product.id) }}" 
+           class="btn-outline-purple">History</a>
+        <a href="{{ url_for('delete_product', product_id=product.id) }}"
+           class="btn-outline-red"
+           onclick="return confirm('Remove this product?')">Delete</a>
+    </div>
+</div>
+
+        <div class="date-text">Added: {{ product.date_added.strftime('%d %b %Y') }}</div>
+    </div>
+    {% endfor %}
+</div>
+
+{% else %}
+<div style="text-align:center;padding:60px 0;color:#4a5568">
+    <i class="ti ti-package" style="font-size:40px;display:block;margin-bottom:12px"></i>
+    <h4 style="font-size:16px;color:#a0aec0;margin-bottom:8px">No products tracked yet!</h4>
+    <p style="font-size:13px">Paste an Amazon URL above to get started.</p>
+</div>
+{% endif %}
+
+<!-- Loading state for Track button -->
+<script>
+document.getElementById('add-form').addEventListener('submit', function(e) {
+    const btn = document.getElementById('track-btn');
+    const urlInput = document.getElementById('url-input');
+
+    if (urlInput.value.trim() !== '') {
+        setTimeout(function() {
+            btn.textContent = 'Tracking...';
+            btn.style.opacity = '0.6';
+            document.getElementById('loading-msg').style.display = 'block';
+        }, 100);
+    }
+});
+</script>
+
+{% endblock %}
