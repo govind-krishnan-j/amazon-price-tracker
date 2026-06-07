@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from predictor import predict_price_trend
 from flask_mail import Mail, Message
 import random
+import threading
 
 load_dotenv()
 
@@ -46,34 +47,9 @@ def load_user(user_id):
 def index():
     return render_template("index.html")
 
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        username = request.form.get("username")
-        email = request.form.get("email")
-        password = request.form.get("password")
-
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
-            flash("Email already registered!", "danger")
-            return redirect(url_for("register"))
-
-        # Generate 6 digit OTP
-        otp = str(random.randint(100000, 999999))
-
-        hashed_pw = bcrypt.generate_password_hash(password).decode("utf-8")
-        new_user = User(
-            username=username,
-            email=email,
-            password=hashed_pw,
-            otp=otp,
-            is_verified=False
-        )
-        db.session.add(new_user)
-        db.session.commit()
-
-        # Send OTP email
-        try:
+def send_otp_email(username, email, otp):
+    try:
+        with app.app_context():
             msg = Message(
                 subject="Verify your Price Tracker account",
                 sender=os.getenv("MAIL_USERNAME"),
@@ -91,12 +67,44 @@ Enter this on the verification page to activate your account.
 - Price Tracker Team
             """
             mail.send(msg)
-            flash("OTP sent to your email!", "success")
-        except Exception as e:
-            print(f"Mail error: {e}")
-            flash("Could not send OTP. Check your email config!", "danger")
+            print("OTP email sent!")
+    except Exception as e:
+        print(f"Mail error: {e}")
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        username = request.form.get("username")
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            flash("Email already registered!", "danger")
             return redirect(url_for("register"))
 
+        otp = str(random.randint(100000, 999999))
+        hashed_pw = bcrypt.generate_password_hash(password).decode("utf-8")
+        new_user = User(
+            username=username,
+            email=email,
+            password=hashed_pw,
+            otp=otp,
+            is_verified=False
+        )
+        db.session.add(new_user)
+        db.session.commit()
+
+        # Send email in background — don't block the request
+        thread = threading.Thread(
+            target=send_otp_email,
+            args=[username, email, otp]
+        )
+        thread.daemon = True
+        thread.start()
+
+        flash("OTP sent to your email!", "success")
         return redirect(url_for("verify_otp", email=email))
 
     return render_template("register.html")
