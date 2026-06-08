@@ -12,7 +12,7 @@ from scraper import get_product_details, send_email_alert
 from datetime import datetime
 import time
 
-with app.app_context():
+def run_check_all():
     products = Product.query.all()
     print(f"Checking {len(products)} products...")
 
@@ -29,8 +29,6 @@ with app.app_context():
             db.session.add(history_entry)
             db.session.commit()
 
-            print(f"Price: ₹{result['price']} | Target: ₹{product.target_price}")
-
             if result["price"] <= product.target_price:
                 send_email_alert(
                     mail,
@@ -38,10 +36,10 @@ with app.app_context():
                     result["price"],
                     product.owner.email
                 )
-                print(f"Alert sent!")
-        else:
-            print(f"Could not fetch: {product.title[:30]}")
-
         time.sleep(5)
 
-    print("Done checking all products!")
+    print("Done!")
+
+if __name__ == "__main__":
+    with app.app_context():
+        run_check_all()

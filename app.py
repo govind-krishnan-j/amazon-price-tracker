@@ -11,6 +11,7 @@ from flask_mail import Mail, Message
 import random
 import threading
 
+
 load_dotenv()
 
 # --- App setup ---
@@ -239,6 +240,23 @@ def product_history(product_id):
         labels=labels,
         prices=prices
     )
+
+@app.route("/run-price-check/<token>")
+def run_price_check(token):
+    if token != os.getenv("CRON_TOKEN"):
+        return "Unauthorized", 401
+    
+    from threading import Thread
+    def run_check():
+        with app.app_context():
+            from check_prices import run_check_all
+            run_check_all()
+    
+    thread = Thread(target=run_check)
+    thread.daemon = True
+    thread.start()
+    
+    return "Price check started!", 200
 
 # --- Create database tables ---
 if __name__ == "__main__":
