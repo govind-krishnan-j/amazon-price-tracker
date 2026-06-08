@@ -12,7 +12,7 @@ A full-stack web application that tracks Amazon product prices and sends email a
 - 📊 **Price history graph** — Visualize price trends over time using Chart.js
 - 🤖 **ML price prediction** — Linear Regression model predicts whether prices will rise or fall
 - 🔐 **User authentication** — Register, login, and OTP email verification
-- ⏰ **Automatic scheduling** — Prices checked every 6 hours using APScheduler
+- ⏰ **Automatic scheduling** — Prices checked every 6 hours via cron-job.org (production) / APScheduler (local development)
 - 🌙 **Dark theme UI** — Clean, minimal dark themed interface
 
 ## 🛠️ Tech Stack
