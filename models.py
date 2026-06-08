@@ -11,8 +11,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
-    otp = db.Column(db.String(6), nullable=True)  
-    alert_sent = db.Column(db.Boolean, default=False)            
+    otp = db.Column(db.String(6), nullable=True)              
     is_verified = db.Column(db.Boolean, default=False)
 
     # One user can have many products
@@ -30,6 +29,7 @@ class Product(db.Model):
     title = db.Column(db.String(500), nullable=False)
     target_price = db.Column(db.Float, nullable=False)
     current_price = db.Column(db.Float, nullable=True)
+    alert_sent = db.Column(db.Boolean, default=False)
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     last_checked = db.Column(db.DateTime, nullable=True)
     price_history = db.relationship("PriceHistory", backref="product", lazy=True)
