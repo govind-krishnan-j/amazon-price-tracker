@@ -245,17 +245,49 @@ def product_history(product_id):
 def run_price_check(token):
     if token != os.getenv("CRON_TOKEN"):
         return "Unauthorized", 401
-    
+
     from threading import Thread
     def run_check():
         with app.app_context():
-            from check_prices import run_check_all
-            run_check_all()
-    
+            from models import Product, PriceHistory
+            from scraper import get_product_details, send_email_alert
+            from datetime import datetime
+            import time
+
+            products = Product.query.all()
+            for product in products:
+                result = get_product_details(product.url)
+                if result:
+                    product.current_price = result["price"]
+                    product.last_checked = datetime.utcnow()
+
+                    history_entry = PriceHistory(
+                        product_id=product.id,
+                        price=result["price"]
+                    )
+                    db.session.add(history_entry)
+
+                    # Send alert only once
+                    if result["price"] <= product.target_price and not product.alert_sent:
+                        send_email_alert(
+                            mail,
+                            result["title"],
+                            result["price"],
+                            product.owner.email
+                        )
+                        product.alert_sent = True
+
+                    # Reset if price goes back up
+                    if result["price"] > product.target_price:
+                        product.alert_sent = False
+
+                    db.session.commit()
+                time.sleep(5)
+
     thread = Thread(target=run_check)
     thread.daemon = True
     thread.start()
-    
+
     return "Price check started!", 200
 
 # --- Create database tables ---

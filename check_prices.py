@@ -27,19 +27,28 @@ def run_check_all():
                 price=result["price"]
             )
             db.session.add(history_entry)
-            db.session.commit()
 
-            if result["price"] <= product.target_price:
+            # Send alert only once when price drops
+            if result["price"] <= product.target_price and not product.alert_sent:
                 send_email_alert(
                     mail,
                     result["title"],
                     result["price"],
                     product.owner.email
                 )
+                product.alert_sent = True
+                print(f"Alert sent for {product.title[:30]}!")
+
+            # Reset alert if price goes back up
+            if result["price"] > product.target_price:
+                product.alert_sent = False
+
+            db.session.commit()
+
         time.sleep(5)
 
     print("Done!")
-
+    
 if __name__ == "__main__":
     with app.app_context():
         run_check_all()

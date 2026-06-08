@@ -2,6 +2,9 @@
 
 A full-stack web application that tracks Amazon product prices and sends email alerts when prices drop below your target price.
 
+## 🌐 Live Demo
+**[https://Govind707.pythonanywhere.com](https://Govind707.pythonanywhere.com)**
+
 ## 🌟 Features
 
 - 🔍 **Real-time price scraping** — Fetches live prices from Amazon India using BeautifulSoup and ScraperAPI
@@ -23,7 +26,7 @@ A full-stack web application that tracks Amazon product prices and sends email a
 | Frontend | HTML, CSS, Chart.js, Tabler Icons |
 | Auth | Flask-Login, Flask-Bcrypt |
 | Email | Flask-Mail, Gmail SMTP |
-| Scheduler | APScheduler |
+| Scheduler | APScheduler(local),cron-job.org (production) |
 
 ## 📸 Screenshots
 
@@ -69,6 +72,7 @@ SECRET_KEY=your_secret_key
 MAIL_USERNAME=yourgmail@gmail.com
 MAIL_PASSWORD=your_gmail_app_password
 SCRAPER_API_KEY=your_scraperapi_key
+CRON_TOKEN=your_random_token
 
 **5. Run the app:**
 ```bash
@@ -82,11 +86,11 @@ http://127.0.0.1:5000
 ## ⚙️ How It Works
 
 User adds Amazon product URL + target price
-→ ScraperAPI fetches product details
-→ Price stored in SQLite database
-→ APScheduler checks prices every 6 hours
-→ If price drops below target → email alert sent
-→ Price history saved for graph and ML prediction
+    → ScraperAPI fetches product details
+    → Price stored in SQLite database
+    → cron-job.org triggers price check every hour
+    → If price drops below target → email alert sent
+    → Price history saved for graph and ML prediction
 
 ## 🤖 ML Price Prediction
 
@@ -96,6 +100,13 @@ Uses **Linear Regression** (scikit-learn) on collected price history to predict 
 - 📈 **Rising** — Price trending up, consider buying soon  
 - ➡️ **Stable** — Price is stable
 
+## 🚀 Deployment
+
+Deployed on **PythonAnywhere** (free tier):
+- Live at [https://Govind707.pythonanywhere.com](https://Govind707.pythonanywhere.com)
+- Automated price checks via cron-job.org every hour
+- Gmail SMTP for email alerts
+
 ## 📁 Project Structure
 
 amazon-price-tracker/
@@ -104,6 +115,7 @@ amazon-price-tracker/
 ├── scraper.py      # Amazon scraper + email alerts
 ├── scheduler.py    # Background price checker
 ├── predictor.py    # ML price prediction
+├── check_prices.py     # Price checker (production)
 ├── requirements.txt
 ├── static/
 │   └── css/
