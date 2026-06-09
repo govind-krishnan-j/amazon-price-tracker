@@ -134,6 +134,7 @@ amazon-price-tracker/
 - Price fetching may take 10-15 seconds due to Amazon's anti-scraping measures
 - ML prediction requires at least 3 price history data points
 - Free ScraperAPI tier limited to 1,000 requests/month
+- Prices shown may not include Amazon coupons or special offers applied at checkout
 
 ## 📄 License
 
