@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
+from flask import make_response
 from models import db, User, Product,PriceHistory
 from scraper import get_product_details
 from scheduler import start_scheduler
@@ -289,6 +290,14 @@ def run_price_check(token):
     thread.start()
 
     return "Price check started!", 200
+
+@app.after_request
+def add_no_cache(response):
+    if not request.path.startswith('/static'):
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    return response
 
 # --- Create database tables ---
 if __name__ == "__main__":
