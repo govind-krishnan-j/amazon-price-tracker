@@ -12,22 +12,22 @@
 <body>
 
     <nav class="navbar">
-        <div style="max-width:900px;width:100%;margin:0 auto;display:flex;align-items:center;justify-content:space-between">
-            <a class="navbar-brand" href="{{ url_for('index') }}">
-                <i class="ti ti-chart-line" style="font-size:18px;color:#6c63ff"></i>
-                Price Tracker
-            </a>
-            <div style="display:flex;align-items:center;gap:12px">
-                {% if current_user.is_authenticated %}
-                    <span class="nav-username">Hi, {{ current_user.username }}!</span>
-                    <a href="{{ url_for('logout') }}" class="btn-nav">Logout</a>
-                {% else %}
-                    <a href="{{ url_for('login') }}" class="btn-nav">Login</a>
-                    <a href="{{ url_for('register') }}" class="btn-purple" style="font-size:12px;padding:5px 14px;text-decoration:none">Register</a>
-                {% endif %}
-            </div>
+    <div style="width:100%;padding:0 24px;display:flex;align-items:center;justify-content:space-between">
+        <a class="navbar-brand" href="{{ url_for('index') }}">
+            <i class="ti ti-chart-line" style="font-size:18px;color:#6c63ff"></i>
+            Price Tracker
+        </a>
+        <div style="display:flex;align-items:center;gap:12px">
+            {% if current_user.is_authenticated %}
+                <span class="nav-username">Hi, {{ current_user.username }}!</span>
+                <a href="{{ url_for('logout') }}" class="btn-nav">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="btn-nav">Login</a>
+                <a href="{{ url_for('register') }}" class="btn-purple" style="font-size:12px;padding:5px 14px;text-decoration:none">Register</a>
+            {% endif %}
         </div>
-    </nav>
+    </div>
+</nav>
 
     <!-- Flash messages -->
     <div style="max-width:900px;margin:16px auto;padding:0 24px">
