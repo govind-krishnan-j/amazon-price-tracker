@@ -96,9 +96,9 @@ User adds Amazon product URL + target price
 
 Uses **Linear Regression** (scikit-learn) on collected price history to predict future price trends:
 
-- 📉 **Dropping** — Price trending down, good time to wait
-- 📈 **Rising** — Price trending up, consider buying soon  
-- ➡️ **Stable** — Price is stable
+-  **Dropping** — Price trending down, good time to wait
+-  **Rising** — Price trending up, consider buying soon  
+-  **Stable** — Price is stable
 
 ## 🚀 Deployment
 
