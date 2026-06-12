@@ -7,13 +7,13 @@ A full-stack web application that tracks Amazon product prices and sends email a
 
 ## 🌟 Features
 
-- 🔍 **Real-time price scraping** — Fetches live prices from Amazon India using BeautifulSoup and ScraperAPI
-- 📧 **Email alerts** — Get notified instantly when a product drops below your target price
-- 📊 **Price history graph** — Visualize price trends over time using Chart.js
-- 🤖 **ML price prediction** — Linear Regression model predicts whether prices will rise or fall
-- 🔐 **User authentication** — Register, login, and OTP email verification
-- ⏰ **Automatic scheduling** — Prices checked every 6 hours via cron-job.org (production) / APScheduler (local development)
-- 🌙 **Dark theme UI** — Clean, minimal dark themed interface
+-  **Real-time price scraping** — Fetches live prices from Amazon India using BeautifulSoup and ScraperAPI
+-  **Email alerts** — Get notified instantly when a product drops below your target price
+-  **Price history graph** — Visualize price trends over time using Chart.js
+-  **ML price prediction** — Linear Regression model predicts whether prices will rise or fall
+-  **User authentication** — Register, login, and OTP email verification
+-  **Automatic scheduling** — Prices checked every 6 hours via cron-job.org (production) / APScheduler (local development)
+-  **Dark theme UI** — Clean, minimal dark themed interface
 
 ## 🛠️ Tech Stack
 
@@ -96,9 +96,9 @@ User adds Amazon product URL + target price
 
 Uses **Linear Regression** (scikit-learn) on collected price history to predict future price trends:
 
-- 📉 **Dropping** — Price trending down, good time to wait
-- 📈 **Rising** — Price trending up, consider buying soon  
-- ➡️ **Stable** — Price is stable
+-  **Dropping** — Price trending down, good time to wait
+-  **Rising** — Price trending up, consider buying soon  
+-  **Stable** — Price is stable
 
 ## 🚀 Deployment
 
