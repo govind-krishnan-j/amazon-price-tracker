@@ -88,7 +88,7 @@ http://127.0.0.1:5000
 User adds Amazon product URL + target price
     → ScraperAPI fetches product details
     → Price stored in SQLite database
-    → cron-job.org triggers price check every hour
+    → cron-job.org triggers price check every 12 hours
     → If price drops below target → email alert sent
     → Price history saved for graph and ML prediction
 
