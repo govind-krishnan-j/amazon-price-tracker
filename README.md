@@ -1,11 +1,11 @@
-# 📈 Amazon Price Tracker
+#  Amazon Price Tracker
 
 A full-stack web application that tracks Amazon product prices and sends email alerts when prices drop below your target price.
 
-## 🌐 Live Demo
+##  Live Demo
 **[https://Govind707.pythonanywhere.com](https://Govind707.pythonanywhere.com)**
 
-## 🌟 Features
+##  Features
 
 -  **Real-time price scraping** — Fetches live prices from Amazon India using BeautifulSoup and ScraperAPI
 -  **Email alerts** — Get notified instantly when a product drops below your target price
@@ -15,7 +15,7 @@ A full-stack web application that tracks Amazon product prices and sends email a
 -  **Automatic scheduling** — Prices checked every 6 hours via cron-job.org (production) / APScheduler (local development)
 -  **Dark theme UI** — Clean, minimal dark themed interface
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -28,7 +28,7 @@ A full-stack web application that tracks Amazon product prices and sends email a
 | Email | Flask-Mail, Gmail SMTP |
 | Scheduler | APScheduler(local),cron-job.org (production) |
 
-## 📸 Screenshots
+##  Screenshots
 
 ### Landing Page
 ![Landing Page](screenshots/landing.png)
@@ -39,7 +39,7 @@ A full-stack web application that tracks Amazon product prices and sends email a
 ### Price History Graph
 ![Price History](screenshots/history.png)
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 - Python 3.10+
@@ -83,16 +83,16 @@ python app.py
 
 http://127.0.0.1:5000
 
-## ⚙️ How It Works
+##  How It Works
 
 User adds Amazon product URL + target price
     → ScraperAPI fetches product details
     → Price stored in SQLite database
-    → cron-job.org triggers price check every hour
+    → cron-job.org triggers price check every 12 hours
     → If price drops below target → email alert sent
     → Price history saved for graph and ML prediction
 
-## 🤖 ML Price Prediction
+##  ML Price Prediction
 
 Uses **Linear Regression** (scikit-learn) on collected price history to predict future price trends:
 
@@ -100,14 +100,14 @@ Uses **Linear Regression** (scikit-learn) on collected price history to predict 
 -  **Rising** — Price trending up, consider buying soon  
 -  **Stable** — Price is stable
 
-## 🚀 Deployment
+##  Deployment
 
 Deployed on **PythonAnywhere** (free tier):
 - Live at [https://Govind707.pythonanywhere.com](https://Govind707.pythonanywhere.com)
 - Automated price checks via cron-job.org every hour
 - Gmail SMTP for email alerts
 
-## 📁 Project Structure
+##  Project Structure
 
 amazon-price-tracker/
 ├── app.py          # Flask app and routes
@@ -129,13 +129,13 @@ amazon-price-tracker/
 ├── register.html
 └── verify_otp.html
 
-## ⚠️ Known Limitations
+##  Known Limitations
 
 - Price fetching may take 10-15 seconds due to Amazon's anti-scraping measures
 - ML prediction requires at least 3 price history data points
 - Free ScraperAPI tier limited to 1,000 requests/month
 - Prices shown may not include Amazon coupons or special offers applied at checkout
 
-## 📄 License
+##  License
 
 MIT License — feel free to use this project for learning and portfolio purposes.
