@@ -5,19 +5,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SCRAPER_API_KEY = os.getenv("SCRAPER_API_KEY")
-
 def get_product_details(url):
     try:
         payload = {
-            "api_key": SCRAPER_API_KEY,
+            "x-api-key": os.getenv("SCRAPING_ANT_KEY"),
             "url": url,
-            "country_code": "in"
+            "browser": "false"
         }
         response = requests.get(
-            "http://api.scraperapi.com",
+            "https://api.scrapingant.com/v2/general",
             params=payload,
-            timeout=70
+            timeout=60
         )
 
         soup = BeautifulSoup(response.content, "html.parser")
