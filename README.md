@@ -7,7 +7,7 @@ A full-stack web application that tracks Amazon product prices and sends email a
 
 ##  Features
 
--  **Real-time price scraping** — Fetches live prices from Amazon India using BeautifulSoup and ScraperAPI
+-  **Real-time price scraping** — Fetches live prices from Amazon India using BeautifulSoup and ScrapingAnt API
 -  **Email alerts** — Get notified instantly when a product drops below your target price
 -  **Price history graph** — Visualize price trends over time using Chart.js
 -  **ML price prediction** — Linear Regression model predicts whether prices will rise or fall
@@ -21,7 +21,7 @@ A full-stack web application that tracks Amazon product prices and sends email a
 |---|---|
 | Backend | Python, Flask |
 | Database | SQLite, SQLAlchemy |
-| Scraping | BeautifulSoup, ScraperAPI |
+| Scraping | BeautifulSoup, ScraperAnt |
 | ML | scikit-learn, NumPy |
 | Frontend | HTML, CSS, Chart.js, Tabler Icons |
 | Auth | Flask-Login, Flask-Bcrypt |
@@ -50,7 +50,7 @@ A full-stack web application that tracks Amazon product prices and sends email a
 
 **1. Clone the repository:**
 ```bash
-git clone https://github.com/govind707-codez/amazon-price-tracker.git
+git clone https://github.com/govind-krishnan-j/amazon-price-tracker.git
 cd amazon-price-tracker
 ```
 
@@ -71,7 +71,7 @@ python -m pip install -r requirements.txt
 SECRET_KEY=your_secret_key
 MAIL_USERNAME=yourgmail@gmail.com
 MAIL_PASSWORD=your_gmail_app_password
-SCRAPER_API_KEY=your_scraperapi_key
+SCRAPING_ANT_KEY=your_scrapingant_key
 CRON_TOKEN=your_random_token
 
 **5. Run the app:**
@@ -86,7 +86,7 @@ http://127.0.0.1:5000
 ##  How It Works
 
 User adds Amazon product URL + target price
-    → ScraperAPI fetches product details
+    → ScrapingAnt API fetches product details
     → Price stored in SQLite database
     → cron-job.org triggers price check every 12 hours
     → If price drops below target → email alert sent
@@ -133,7 +133,7 @@ amazon-price-tracker/
 
 - Price fetching may take 10-15 seconds due to Amazon's anti-scraping measures
 - ML prediction requires at least 3 price history data points
-- Free ScraperAPI tier limited to 1,000 requests/month
+- Free ScraperAnt API tier limited to 10,000 requests/month
 - Prices shown may not include Amazon coupons or special offers applied at checkout
 
 ##  License
