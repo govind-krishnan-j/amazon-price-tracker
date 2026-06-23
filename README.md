@@ -88,7 +88,7 @@ http://127.0.0.1:5000
 User adds Amazon product URL + target price
     → ScrapingAnt API fetches product details
     → Price stored in SQLite database
-    → cron-job.org triggers price check every 12 hours
+    → cron-job.org triggers price check every 6 hours
     → If price drops below target → email alert sent
     → Price history saved for graph and ML prediction
 
@@ -104,7 +104,7 @@ Uses **Linear Regression** (scikit-learn) on collected price history to predict 
 
 Deployed on **PythonAnywhere** (free tier):
 - Live at [https://Govind707.pythonanywhere.com](https://Govind707.pythonanywhere.com)
-- Automated price checks via cron-job.org every hour
+- Automated price checks via cron-job.org every 6 hours
 - Gmail SMTP for email alerts
 
 ##  Project Structure
