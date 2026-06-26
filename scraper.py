@@ -20,13 +20,21 @@ def get_product_details(url):
 
         soup = BeautifulSoup(response.content, "html.parser")
 
+        # More specific price selector
+        price_element = soup.select_one(".priceToPay .a-price-whole")
+
+        # Fallback to general selector
+        if not price_element:
+            price_element = soup.find("span", class_="a-price-whole")
+
         price = float(
-            soup.find(class_="a-price-whole")
+            price_element
             .get_text()
             .replace("INR", "")
             .replace(",", "")
             .strip()
         )
+
         title = soup.find(id="productTitle").get_text().strip()
 
         return {"title": title, "price": price}
@@ -34,7 +42,7 @@ def get_product_details(url):
     except Exception as e:
         print(f"Scraping error: {e}")
         return None
-
+    
 def send_email_alert(mail, title, price, user_email):
     try:
         from flask_mail import Message
@@ -59,3 +67,4 @@ Happy shopping!
         print(f"Email alert sent to {user_email}!")
     except Exception as e:
         print(f"Email alert error: {e}")
+
