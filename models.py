@@ -33,6 +33,7 @@ class Product(db.Model):
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     last_checked = db.Column(db.DateTime, nullable=True)
     price_history = db.relationship("PriceHistory", backref="product", lazy=True)
+    is_available = db.Column(db.Boolean, default=True)
 
     # Link to the user who added this product
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)

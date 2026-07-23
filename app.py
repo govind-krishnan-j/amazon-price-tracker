@@ -258,9 +258,15 @@ def run_price_check(token):
             products = Product.query.all()
             for product in products:
                 result = get_product_details(product.url)
+
                 if result:
-                    product.current_price = result["price"]
+                    # product.current_price = result["price"]
                     product.last_checked = datetime.utcnow()
+                    
+                    if result.get("available", True):
+                        product.is_available = True
+                        product.current_price = result["price"]
+
 
                     history_entry = PriceHistory(
                         product_id=product.id,

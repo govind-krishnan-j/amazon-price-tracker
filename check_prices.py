@@ -18,37 +18,48 @@ def run_check_all():
 
     for product in products:
         result = get_product_details(product.url)
+
         if result:
-            product.current_price = result["price"]
             product.last_checked = datetime.utcnow()
 
-            history_entry = PriceHistory(
-                product_id=product.id,
-                price=result["price"]
-            )
-            db.session.add(history_entry)
+            if result.get("available", True):
+                product.is_available = True
+                product.current_price = result["price"]
 
-            # Send alert only once when price drops
-            if result["price"] <= product.target_price and not product.alert_sent:
-                send_email_alert(
-                    mail,
-                    result["title"],
-                    result["price"],
-                    product.owner.email
+                # Save to price history only when price is available
+                history_entry = PriceHistory(
+                    product_id=product.id,
+                    price=result["price"]
                 )
-                product.alert_sent = True
-                print(f"Alert sent for {product.title[:30]}!")
+                db.session.add(history_entry)
 
-            # Reset alert if price goes back up
-            if result["price"] > product.target_price:
-                product.alert_sent = False
+                # Send alert only once when price drops
+                if result["price"] <= product.target_price and not product.alert_sent:
+                    send_email_alert(
+                        mail,
+                        result["title"],
+                        result["price"],
+                        product.owner.email
+                    )
+                    product.alert_sent = True
+                    print(f"Alert sent for {product.title[:30]}!")
+
+                # Reset alert if price goes back up
+                if result["price"] > product.target_price:
+                    product.alert_sent = False
+
+            else:
+                product.is_available = False
+                print(f"{product.title[:30]} is currently unavailable")
 
             db.session.commit()
+        else:
+            print(f"Could not fetch: {product.title[:30]}")
 
         time.sleep(5)
 
     print("Done!")
-    
+
 if __name__ == "__main__":
     with app.app_context():
         run_check_all()

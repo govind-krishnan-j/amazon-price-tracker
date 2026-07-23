@@ -20,16 +20,25 @@ def get_product_details(url):
 
         soup = BeautifulSoup(response.content, "html.parser")
 
-        # More specific price selector
-        price_element = soup.select_one(".priceToPay .a-price-whole")
+        # Check if product is unavailable
+        unavailable_text = soup.find(id="availability")
+        if unavailable_text and "currently unavailable" in unavailable_text.get_text().lower():
+            title = soup.find(id="productTitle")
+            return {
+                "title": title.get_text().strip() if title else "Unknown Product",
+                "price": None,
+                "available": False
+            }
 
-        # Fallback to general selector
+        price_element = soup.select_one(".priceToPay .a-price-whole")
         if not price_element:
             price_element = soup.find("span", class_="a-price-whole")
 
+        if not price_element:
+            return None
+
         price = float(
-            price_element
-            .get_text()
+            price_element.get_text()
             .replace("INR", "")
             .replace(",", "")
             .strip()
@@ -37,7 +46,7 @@ def get_product_details(url):
 
         title = soup.find(id="productTitle").get_text().strip()
 
-        return {"title": title, "price": price}
+        return {"title": title, "price": price, "available": True}
 
     except Exception as e:
         print(f"Scraping error: {e}")
