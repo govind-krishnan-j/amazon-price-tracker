@@ -260,33 +260,33 @@ def run_price_check(token):
                 result = get_product_details(product.url)
 
                 if result:
-                    # product.current_price = result["price"]
                     product.last_checked = datetime.utcnow()
-                    
+
                     if result.get("available", True):
                         product.is_available = True
                         product.current_price = result["price"]
 
-
-                    history_entry = PriceHistory(
-                        product_id=product.id,
-                        price=result["price"]
-                    )
-                    db.session.add(history_entry)
-
-                    # Send alert only once
-                    if result["price"] <= product.target_price and not product.alert_sent:
-                        send_email_alert(
-                            mail,
-                            result["title"],
-                            result["price"],
-                            product.owner.email
+                        history_entry = PriceHistory(
+                            product_id=product.id,
+                            price=result["price"]
                         )
-                        product.alert_sent = True
+                        db.session.add(history_entry)
 
-                    # Reset if price goes back up
-                    if result["price"] > product.target_price:
-                        product.alert_sent = False
+                        # Send alert only once
+                        if result["price"] <= product.target_price and not product.alert_sent:
+                            send_email_alert(
+                                mail,
+                                result["title"],
+                                result["price"],
+                                product.owner.email
+                            )
+                            product.alert_sent = True
+
+                        # Reset if price goes back up
+                        if result["price"] > product.target_price:
+                            product.alert_sent = False
+                    else:
+                        product.is_available = False
 
                     db.session.commit()
                 time.sleep(5)

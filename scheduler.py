@@ -14,27 +14,34 @@ def check_all_prices(app, db, Product, PriceHistory, mail):
             result = get_product_details(product.url)
 
             if result:
-                product.current_price = result["price"]
                 product.last_checked = datetime.utcnow()
 
-                history_entry = PriceHistory(
-                    product_id=product.id,
-                    price=result["price"]
-                )
-                db.session.add(history_entry)
-                db.session.commit()
+                if result.get("available", True):
+                    product.is_available = True
+                    product.current_price = result["price"]
 
-                print(f"Price: ₹{result['price']} | Target: ₹{product.target_price}")
-
-                if result["price"] <= product.target_price:
-                    owner = product.owner
-                    send_email_alert(
-                        mail,
-                        result["title"],
-                        result["price"],
-                        owner.email
+                    history_entry = PriceHistory(
+                        product_id=product.id,
+                        price=result["price"]
                     )
-                    print(f"Email alert sent for {product.title[:30]}!")
+                    db.session.add(history_entry)
+                    db.session.commit()
+
+                    print(f"Price: ₹{result['price']} | Target: ₹{product.target_price}")
+
+                    if result["price"] <= product.target_price:
+                        owner = product.owner
+                        send_email_alert(
+                            mail,
+                            result["title"],
+                            result["price"],
+                            owner.email
+                        )
+                        print(f"Email alert sent for {product.title[:30]}!")
+                else:
+                    product.is_available = False
+                    db.session.commit()
+                    print(f"{product.title[:30]} is currently unavailable")
             else:
                 print(f"Could not fetch price for {product.title[:30]}")
 
