@@ -58,7 +58,7 @@
         <span class="badge-waiting" style="background:rgba(245,101,101,0.1);color:#fc8181;border-color:rgba(245,101,101,0.2)">
         ⚠️ Currently unavailable
         </span>
-    {% elif product.current_price <= product.target_price %}
+    {% elif product.current_price is not none and product.current_price <= product.target_price %}
         <span class="badge-below">✓ Below target</span>
     {% else %}
         <span class="badge-waiting">⏳ Waiting for drop</span>

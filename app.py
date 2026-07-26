@@ -196,7 +196,8 @@ def add_product():
         title=result["title"],
         current_price=result["price"],
         target_price=target_price,
-        user_id=current_user.id
+        user_id=current_user.id,
+        is_available=result.get("available", True)
     )
     db.session.add(new_product)
     db.session.commit()
