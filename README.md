@@ -44,7 +44,7 @@ A full-stack web application that tracks Amazon product prices and sends email a
 ### Prerequisites
 - Python 3.10+
 - Gmail account with App Password
-- ScraperAPI account (free tier)
+- ScrapingAnt API account (free tier)
 
 ### Installation
 
