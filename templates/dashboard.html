@@ -2,23 +2,24 @@
 {% block content %}
 
 <!-- Add Product Form -->
-<div class="dark-card" style="margin-bottom:28px">
-    <div style="font-size:14px;font-weight:500;color:#a0aec0;margin-bottom:14px;display:flex;align-items:center;gap:8px">
-        <i class="ti ti-plus" style="color:#6c63ff"></i>
+<div class="dark-card" style="margin-bottom:30px">
+    <div class="section-title" style="margin-bottom:14px">
+        <i class="ti ti-plus"></i>
         Track a new product
     </div>
     <form method="POST" action="{{ url_for('add_product') }}" id="add-form">
-        <div style="display:grid;grid-template-columns:1fr 200px 110px;gap:10px">
+        <div class="add-form-grid">
             <input type="url" name="url" id="url-input" class="dark-input" placeholder="Paste Amazon product URL here" required>
             <input type="number" name="target_price" class="dark-input" placeholder="Target price (₹)" required>
-            <button type="submit" class="btn-purple" id="track-btn" >Track</button>
+            <button type="submit" class="btn btn-primary" id="track-btn">
+                <i class="ti ti-bell-plus"></i> Track
+            </button>
         </div>
     </form>
-    <!-- Add this loading div -->
-    <div id="loading-msg" style="display:none;margin-top:14px;padding:12px;background:#0f1117;border-radius:8px;border:0.5px solid #2d3748">
-        <div style="display:flex;align-items:center;gap:10px">
+    <div id="loading-msg" class="loading-msg" style="display:none">
+        <div style="display:flex;align-items:center;gap:12px">
             <div class="spinner"></div>
-            <span style="font-size:13px;color:#a0aec0">Fetching from Amazon — this may take up to a minute...</span>
+            <span style="font-size:13px;color:var(--text-2)">Fetching from Amazon — this may take up to a minute...</span>
         </div>
     </div>
 </div>
@@ -27,18 +28,17 @@
 <div class="section-title">
     <i class="ti ti-package"></i>
     Your tracked products
+    {% if products %}<span style="color:var(--text-muted);font-weight:500;text-transform:none;letter-spacing:0">· {{ products|length }}</span>{% endif %}
 </div>
 
 {% if products %}
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+<div class="products-grid">
     {% for product in products %}
-    <div class="dark-card">
-        <div style="font-size:13px;color:#e2e8f0;margin-bottom:14px;line-height:1.5">
-            {{ product.title[:80] }}...
-        </div>
+    <div class="dark-card card-hover product-card" style="animation-delay:{{ loop.index0 * 0.05 }}s">
+        <div class="product-title">{{ product.title }}</div>
 
-        <div style="display:flex;justify-content:space-between;margin-bottom:12px">
-            <div style="display:flex;flex-direction:column;gap:3px">
+        <div class="price-row">
+            <div style="display:flex;flex-direction:column;gap:4px">
                 <span class="price-label">Current price</span>
                 <span class="price-current">
                     {% if product.current_price is not none %}
@@ -48,63 +48,88 @@
                     {% endif %}
                 </span>
             </div>
-            <div style="display:flex;flex-direction:column;gap:3px;text-align:right">
+            <div style="display:flex;flex-direction:column;gap:4px;text-align:right">
                 <span class="price-label">Target price</span>
                 <span class="price-target">₹{{ "{:,.0f}".format(product.target_price) }}</span>
             </div>
         </div>
 
-    {% if not product.is_available %}
-        <span class="badge-waiting" style="background:rgba(245,101,101,0.1);color:#fc8181;border-color:rgba(245,101,101,0.2)">
-        ⚠️ Currently unavailable
-        </span>
-    {% elif product.current_price is not none and product.current_price <= product.target_price %}
-        <span class="badge-below">✓ Below target</span>
-    {% else %}
-        <span class="badge-waiting">⏳ Waiting for drop</span>
-    {% endif %}
+        <!-- Progress toward target -->
+        {% if product.current_price is not none %}
+            {% if product.current_price <= product.target_price %}
+                <div>
+                    <div class="progress"><div class="progress-bar is-reached" style="width:100%"></div></div>
+                    <div class="progress-meta"><span>Target reached</span><span>🎉</span></div>
+                </div>
+            {% else %}
+                {% set pct = (product.target_price / product.current_price * 100) | round(0, 'floor') | int %}
+                <div>
+                    <div class="progress"><div class="progress-bar" style="width:{{ pct }}%"></div></div>
+                    <div class="progress-meta">
+                        <span>{{ pct }}% to target</span>
+                        <span>₹{{ "{:,.0f}".format(product.current_price - product.target_price) }} to go</span>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+
+        <!-- Status badge -->
+        {% if not product.is_available %}
+            <span class="badge badge-danger">⚠️ Currently unavailable</span>
+        {% elif product.current_price is not none and product.current_price <= product.target_price %}
+            <span class="badge badge-below">✓ Below target</span>
+        {% else %}
+            <span class="badge badge-waiting">⏳ Waiting for drop</span>
+        {% endif %}
+
+        <!-- Prediction -->
         {% set pred = predictions[product.id] %}
-<div style="margin-top:10px;padding:10px;background:#0f1117;border-radius:8px;border:0.5px solid #2d3748">
-    <div style="font-size:11px;color:#4a5568;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">
-        Prediction
-    </div>
-    <div style="font-size:13px;color:{{ pred.color }}">
-        {{ pred.icon }} {{ pred.message }}
-    </div>
-    {% if pred.predicted_price is defined %}
-    <div style="font-size:11px;color:#4a5568;margin-top:4px">
-        Next predicted price: ₹{{ "{:,.0f}".format(pred.predicted_price) }}
-    </div>
-    {% endif %}
-</div>
+        <div class="prediction">
+            <div class="prediction-label">Prediction</div>
+            <div class="prediction-body" style="color:{{ pred.color }}">
+                {{ pred.icon }} {{ pred.message }}
+            </div>
+            {% if pred.predicted_price is defined %}
+            <div class="prediction-sub">
+                Next predicted price: ₹{{ "{:,.0f}".format(pred.predicted_price) }}
+            </div>
+            {% endif %}
+        </div>
 
-        <div class="dark-divider"></div>
+        <hr class="dark-divider">
 
-        <div style="display:flex;justify-content:space-between;align-items:center">
-    <a href="{{ product.url }}" target="_blank" class="btn-outline-purple">View on Amazon</a>
-    <div style="display:flex;gap:8px">
-        <a href="{{ url_for('product_history', product_id=product.id) }}" 
-           class="btn-outline-purple">History</a>
-        <a href="{{ url_for('delete_product', product_id=product.id) }}"
-           class="btn-outline-red"
-           onclick="return confirm('Remove this product?')">Delete</a>
-    </div>
-</div>
+        <div class="card-footer">
+            <a href="{{ product.url }}" target="_blank" class="btn-outline-purple">
+                <i class="ti ti-external-link"></i> View on Amazon
+            </a>
+            <div style="display:flex;gap:8px">
+                <a href="{{ url_for('product_history', product_id=product.id) }}" class="btn-outline-purple">
+                    <i class="ti ti-chart-line"></i> History
+                </a>
+                <a href="{{ url_for('delete_product', product_id=product.id) }}"
+                   class="btn-outline-red"
+                   onclick="return confirm('Remove this product?')">
+                    <i class="ti ti-trash"></i>
+                </a>
+            </div>
+        </div>
 
-        <div class="date-text">Added: {{ product.date_added.strftime('%d %b %Y') }}</div>
+        <div class="date-text">Added {{ product.date_added.strftime('%d %b %Y') }}</div>
     </div>
     {% endfor %}
 </div>
 
 {% else %}
-<div style="text-align:center;padding:60px 0;color:#4a5568">
-    <i class="ti ti-package" style="font-size:40px;display:block;margin-bottom:12px"></i>
-    <h4 style="font-size:16px;color:#a0aec0;margin-bottom:8px">No products tracked yet!</h4>
-    <p style="font-size:13px">Paste an Amazon URL above to get started.</p>
+<div class="dark-card empty-state">
+    <i class="ti ti-package empty-icon"></i>
+    <h4>No products tracked yet</h4>
+    <p>Paste an Amazon URL above to start tracking prices.</p>
 </div>
 {% endif %}
 
-<!-- Loading state for Track button -->
+{% endblock %}
+
+{% block scripts %}
 <script>
 document.getElementById('add-form').addEventListener('submit', function(e) {
     const btn = document.getElementById('track-btn');
@@ -112,12 +137,12 @@ document.getElementById('add-form').addEventListener('submit', function(e) {
 
     if (urlInput.value.trim() !== '') {
         setTimeout(function() {
-            btn.textContent = 'Tracking...';
-            btn.style.opacity = '0.6';
+            btn.innerHTML = 'Tracking...';
+            btn.style.opacity = '0.65';
+            btn.style.pointerEvents = 'none';
             document.getElementById('loading-msg').style.display = 'block';
         }, 100);
     }
 });
 </script>
-
 {% endblock %}

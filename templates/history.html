@@ -1,23 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!-- Back button + title -->
-<div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
-    <a href="{{ url_for('dashboard') }}" 
-       style="color:#a0aec0;text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px;border:0.5px solid #2d3748;padding:6px 12px;border-radius:8px;transition:all 0.2s"
-       onmouseover="this.style.borderColor='#6c63ff';this.style.color='#6c63ff'"
-       onmouseout="this.style.borderColor='#2d3748';this.style.color='#a0aec0'">
+<!-- Back button -->
+<div class="page-head">
+    <a href="{{ url_for('dashboard') }}" class="back-link">
         <i class="ti ti-arrow-left"></i> Back to dashboard
     </a>
 </div>
 
 <!-- Product info card -->
 <div class="dark-card" style="margin-bottom:24px">
-    <div style="font-size:13px;color:#e2e8f0;margin-bottom:16px;line-height:1.5">
+    <div style="font-size:15px;color:var(--text);margin-bottom:20px;line-height:1.55;font-weight:500">
         {{ product.title }}
     </div>
-    <div style="display:flex;gap:32px">
-        <div style="display:flex;flex-direction:column;gap:3px">
+    <div class="stat-strip">
+        <div style="display:flex;flex-direction:column;gap:4px">
             <span class="price-label">Current price</span>
             <span class="price-current">
                 {% if product.current_price is not none %}
@@ -27,13 +24,13 @@
                 {% endif %}
             </span>
         </div>
-        <div style="display:flex;flex-direction:column;gap:3px">
+        <div style="display:flex;flex-direction:column;gap:4px">
             <span class="price-label">Target price</span>
             <span class="price-target">₹{{ "{:,.0f}".format(product.target_price) }}</span>
         </div>
-        <div style="display:flex;flex-direction:column;gap:3px">
+        <div style="display:flex;flex-direction:column;gap:4px">
             <span class="price-label">Data points</span>
-            <span style="font-size:18px;font-weight:500;color:#e2e8f0">{{ prices|length }}</span>
+            <span class="stat-value">{{ prices|length }}</span>
         </div>
     </div>
 </div>
@@ -46,15 +43,21 @@
     </div>
 
     {% if prices|length > 0 %}
-        <canvas id="priceChart" style="width:100%;height:300px"></canvas>
+        <div class="chart-wrap">
+            <canvas id="priceChart"></canvas>
+        </div>
     {% else %}
-        <div style="text-align:center;padding:60px 0;color:#4a5568">
-            <i class="ti ti-chart-line" style="font-size:40px;display:block;margin-bottom:12px"></i>
-            <p style="font-size:13px">No price history yet — check back after the next scheduled scan!</p>
+        <div class="empty-state" style="padding:56px 0">
+            <i class="ti ti-chart-line empty-icon"></i>
+            <p>No price history yet — check back after the next scheduled scan!</p>
         </div>
     {% endif %}
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+{% if prices|length > 0 %}
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -64,6 +67,11 @@
 
     const ctx = document.getElementById('priceChart').getContext('2d');
 
+    // Gradient fill under the price line
+    const fill = ctx.createLinearGradient(0, 0, 0, 340);
+    fill.addColorStop(0, 'rgba(124, 108, 255, 0.35)');
+    fill.addColorStop(1, 'rgba(124, 108, 255, 0)');
+
     new Chart(ctx, {
         type: 'line',
         data: {
@@ -72,21 +80,23 @@
                 {
                     label: 'Price (₹)',
                     data: prices,
-                    borderColor: '#6c63ff',
-                    backgroundColor: 'rgba(108,99,255,0.08)',
-                    borderWidth: 2,
-                    pointBackgroundColor: '#6c63ff',
+                    borderColor: '#7c6cff',
+                    backgroundColor: fill,
+                    borderWidth: 2.5,
+                    pointBackgroundColor: '#7c6cff',
+                    pointBorderColor: '#0c0e14',
+                    pointBorderWidth: 2,
                     pointRadius: 4,
-                    pointHoverRadius: 6,
+                    pointHoverRadius: 7,
                     fill: true,
                     tension: 0.4
                 },
                 {
                     label: 'Target price (₹)',
                     data: Array(labels.length).fill(targetPrice),
-                    borderColor: '#48bb78',
+                    borderColor: '#34d399',
                     borderWidth: 1.5,
-                    borderDash: [6, 4],
+                    borderDash: [6, 5],
                     pointRadius: 0,
                     fill: false
                 }
@@ -94,40 +104,51 @@
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
+            interaction: { intersect: false, mode: 'index' },
             plugins: {
                 legend: {
                     labels: {
-                        color: '#a0aec0',
-                        font: { size: 12 }
+                        color: '#aab2c5',
+                        font: { size: 12, family: 'Inter' },
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        padding: 18
                     }
                 },
                 tooltip: {
-                    backgroundColor: '#1a1d27',
-                    borderColor: '#2d3748',
+                    backgroundColor: 'rgba(12, 14, 20, 0.95)',
+                    borderColor: 'rgba(124, 108, 255, 0.4)',
                     borderWidth: 1,
-                    titleColor: '#e2e8f0',
-                    bodyColor: '#a0aec0',
+                    titleColor: '#eceef4',
+                    bodyColor: '#aab2c5',
+                    padding: 12,
+                    cornerRadius: 10,
+                    titleFont: { family: 'Inter' },
+                    bodyFont: { family: 'Inter' },
                     callbacks: {
-                        label: ctx => `₹${ctx.parsed.y.toLocaleString('en-IN')}`
+                        label: ctx => ` ₹${ctx.parsed.y.toLocaleString('en-IN')}`
                     }
                 }
             },
             scales: {
                 x: {
-                    ticks: { color: '#4a5568', font: { size: 11 } },
-                    grid: { color: '#1e2130' }
+                    ticks: { color: '#6c7488', font: { size: 11, family: 'Inter' } },
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    border: { color: 'rgba(255,255,255,0.08)' }
                 },
                 y: {
                     ticks: {
-                        color: '#4a5568',
-                        font: { size: 11 },
+                        color: '#6c7488',
+                        font: { size: 11, family: 'Inter' },
                         callback: val => '₹' + val.toLocaleString('en-IN')
                     },
-                    grid: { color: '#1e2130' }
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    border: { color: 'rgba(255,255,255,0.08)' }
                 }
             }
         }
     });
 </script>
-
+{% endif %}
 {% endblock %}
