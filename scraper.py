@@ -8,12 +8,12 @@ load_dotenv()
 def get_product_details(url):
     try:
         payload = {
-            "x-api-key": os.getenv("SCRAPING_ANT_KEY"),
+            "x-api-key": os.getenv("SCRAPERAPI_KEY"),
             "url": url,
             "browser": "false"
         }
         response = requests.get(
-            "https://api.scrapingant.com/v2/general",
+            "https://api.scraperapi.com",
             params=payload,
             timeout=60
         )
