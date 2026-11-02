@@ -8,7 +8,7 @@ load_dotenv()
 def get_product_details(url):
     try:
         payload = {
-            "x-api-key": os.getenv("SCRAPERAPI_KEY"),
+            "api_key": os.getenv("SCRAPERAPI_KEY"),
             "url": url,
             "browser": "false"
         }
